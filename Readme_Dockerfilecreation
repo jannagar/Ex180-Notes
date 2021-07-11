@@ -1,0 +1,260 @@
+[student@workstation ~]$ pwd
+/home/student
+[student@workstation ~]$ ls
+Desktop  Documents  Downloads  Music  Pictures  Public  Templates  Videos
+[student@workstation ~]$ lab dockerfile-review start
+/usr/local/lib/labtool.do180.shlib: line 52: /usr/local/etc/ocp4.config: No such file or directory
+/usr/local/lib/labtool.do180.shlib: line 52: /usr/local/etc/ocp4.config: No such file or directory
+
+Setting up workstation for the Lab: Creating Custom Container Images
+
+ · Checking podman configuration...............................  SUCCESS
+ · Checking if the container exists or is running..............  SUCCESS
+ · Setting up labs folder......................................  SUCCESS
+ · Setting up solutions folder.................................  SUCCESS
+ · Downloading starter project.................................  SUCCESS
+ · Downloading solution project................................  SUCCESS
+
+Setup successful. Please proceed with the exercise.
+
+[student@workstation ~]$ ls
+Desktop  Documents  Music     Public     Videos
+DO180    Downloads  Pictures  Templates
+[student@workstation ~]$ cd DO180
+[student@workstation DO180]$ LS
+bash: LS: command not found...
+Similar command is: 'ls'
+[student@workstation DO180]$ ls
+labs  solutions
+[student@workstation DO180]$ cd labs
+[student@workstation labs]$ ls
+dockerfile-review
+[student@workstation labs]$ cd dockerfile-review/
+[student@workstation dockerfile-review]$ ls
+Dockerfile  src  training.repo
+[student@workstation dockerfile-review]$ cd src
+[student@workstation src]$ ls
+index.html
+[student@workstation src]$ cat index.html
+<html>
+ <header><title>DO180 Hello!</title></header>
+ <body>
+   Hello World! The dockerfile-review lab works!
+ </body>
+</html>
+[student@workstation src]$ cd ~
+[student@workstation ~]$ la
+bash: la: command not found...
+[student@workstation ~]$ ls
+Desktop  Documents  Music     Public     Videos
+DO180    Downloads  Pictures  Templates
+[student@workstation ~]$ cd /home/student/
+[student@workstation ~]$ DO180/labs/dockerfile-review
+bash: DO180/labs/dockerfile-review: Is a directory
+[student@workstation ~]$ cd /home/student/DO180/labs/dockerfile-review
+[student@workstation dockerfile-review]$ ls
+Dockerfile  src  training.repo
+[student@workstation dockerfile-review]$ cat Dockerfile
+FROM <base image>
+
+MAINTAINER username <username@example.com>
+
+ENV PORT <port>
+
+RUN <provide yum commands in a single line>
+
+RUN sed -ri -e "/^Listen 80/c\Listen ${PORT}" /etc/httpd/conf/httpd.conf && \
+    chown -R apache:apache /etc/httpd/logs/ && \
+    chown -R apache:apache /run/httpd/
+
+USER apache
+
+# Expose the custom port that you provided in the ENV var
+
+# Copy all files under src/ folder to Apache DocumentRoot (/var/www/html) 
+
+# Start Apache in the foreground
+[student@workstation dockerfile-review]$ vim Dockerfile
+[student@workstation dockerfile-review]$ vim Dockerfile
+[student@workstation dockerfile-review]$ cat Dockerfile
+FROM ubi7/ubi:7.7
+
+MAINTAINER Nagaraju vnjsharma@gmail.com
+
+ENV PORT 8080
+
+RUN yum install -y httpd && \
+ yum clean all
+
+RUN sed -ri -e "/^Listen 80/c\Listen ${PORT}" /etc/httpd/conf/httpd.conf && \
+    chown -R apache:apache /etc/httpd/logs/ && \
+    chown -R apache:apache /run/httpd/
+
+USER apache
+
+# Expose the custom port that you provided in the ENV var
+Expose ${PORT}
+
+# Copy all files under src/ folder to Apache DocumentRoot (/var/www/html) 
+COPY ./src/ /var/www/html/
+
+# Start Apache in the foreground
+CMD ["httpd", "-D", "FOREGROUND"]
+[student@workstation dockerfile-review]$ sudo podman build --layers=false -t do180/custom-apache .
+STEP 1: FROM ubi7/ubi:7.7
+Getting image source signatures
+Copying blob 09dbbf8834d2 done
+Copying blob fcd63ccfdd0c done
+Copying config 0355cd652b done
+Writing manifest to image destination
+Storing signatures
+STEP 2: MAINTAINER Nagaraju vnjsharma@gmail.com
+STEP 3: ENV PORT 8080
+STEP 4: RUN yum install -y httpd &&  yum clean all
+Loaded plugins: ovl, product-id, search-disabled-repos, subscription-manager
+This system is not receiving updates. You can use subscription-manager on the host to register and assign subscriptions.
+ubi-7                                                    | 3.8 kB     00:00     
+ubi-7-rhah                                               | 3.7 kB     00:00     
+ubi-7-server-devtools-rpms                               | 3.8 kB     00:00     
+ubi-7-server-extras-rpms                                 | 3.7 kB     00:00     
+ubi-7-server-optional-rpms                               | 3.8 kB     00:00     
+ubi-server-rhscl-7-rpms                                  | 3.8 kB     00:00     
+(1/18): ubi-7/x86_64/group                                 |  124 B   00:00     
+(2/18): ubi-7/x86_64/primary_db                            | 800 kB   00:00     
+(3/18): ubi-7/x86_64/updateinfo                            |   92 B   00:00     
+(4/18): ubi-7-rhah/x86_64/updateinfo                       |   92 B   00:00     
+(5/18): ubi-7-rhah/x86_64/primary_db                       | 2.5 kB   00:00     
+(6/18): ubi-7-rhah/x86_64/group                            |  124 B   00:00     
+(7/18): ubi-7-server-devtools-rpms/x86_64/group            |  124 B   00:00     
+(8/18): ubi-7-server-devtools-rpms/x86_64/primary_db       | 8.6 kB   00:00     
+(9/18): ubi-7-server-devtools-rpms/x86_64/updateinfo       |   92 B   00:00     
+(10/18): ubi-7-server-extras-rpms/x86_64/updateinfo        |   92 B   00:00     
+(11/18): ubi-7-server-extras-rpms/x86_64/primary_db        | 6.8 kB   00:00     
+(12/18): ubi-7-server-extras-rpms/x86_64/group             |  124 B   00:00     
+(13/18): ubi-7-server-optional-rpms/x86_64/group           |  124 B   00:00     
+(14/18): ubi-7-server-optional-rpms/x86_64/primary_db      |  14 kB   00:00     
+(15/18): ubi-7-server-optional-rpms/x86_64/updateinfo      |   92 B   00:00     
+(16/18): ubi-server-rhscl-7-rpms/x86_64/updateinfo         |   92 B   00:00     
+(17/18): ubi-server-rhscl-7-rpms/x86_64/primary_db         | 396 kB   00:00     
+(18/18): ubi-server-rhscl-7-rpms/x86_64/group              |  124 B   00:00     
+Resolving Dependencies
+--> Running transaction check
+---> Package httpd.x86_64 0:2.4.6-97.el7_9 will be installed
+--> Processing Dependency: httpd-tools = 2.4.6-97.el7_9 for package: httpd-2.4.6-97.el7_9.x86_64
+--> Processing Dependency: system-logos >= 7.92.1-1 for package: httpd-2.4.6-97.el7_9.x86_64
+--> Processing Dependency: /etc/mime.types for package: httpd-2.4.6-97.el7_9.x86_64
+--> Processing Dependency: libapr-1.so.0()(64bit) for package: httpd-2.4.6-97.el7_9.x86_64
+--> Processing Dependency: libaprutil-1.so.0()(64bit) for package: httpd-2.4.6-97.el7_9.x86_64
+--> Running transaction check
+---> Package apr.x86_64 0:1.4.8-7.el7 will be installed
+---> Package apr-util.x86_64 0:1.5.2-6.el7 will be installed
+---> Package httpd-tools.x86_64 0:2.4.6-97.el7_9 will be installed
+---> Package mailcap.noarch 0:2.1.41-2.el7 will be installed
+---> Package redhat-logos.noarch 0:70.7.0-1.el7 will be installed
+--> Finished Dependency Resolution
+
+Dependencies Resolved
+
+================================================================================
+ Package              Arch           Version                Repository     Size
+================================================================================
+Installing:
+ httpd                x86_64         2.4.6-97.el7_9         ubi-7         1.2 M
+Installing for dependencies:
+ apr                  x86_64         1.4.8-7.el7            ubi-7         104 k
+ apr-util             x86_64         1.5.2-6.el7            ubi-7          92 k
+ httpd-tools          x86_64         2.4.6-97.el7_9         ubi-7          93 k
+ mailcap              noarch         2.1.41-2.el7           ubi-7          31 k
+ redhat-logos         noarch         70.7.0-1.el7           ubi-7          13 M
+
+Transaction Summary
+================================================================================
+Install  1 Package (+5 Dependent packages)
+
+Total download size: 15 M
+Installed size: 18 M
+Downloading packages:
+warning: /var/cache/yum/x86_64/7Server/ubi-7/packages/apr-util-1.5.2-6.el7.x86_64.rpm: Header V3 RSA/SHA256 Signature, key ID fd431d51: NOKEY
+Public key for apr-util-1.5.2-6.el7.x86_64.rpm is not installed
+(1/6): apr-util-1.5.2-6.el7.x86_64.rpm                     |  92 kB   00:00     
+(2/6): httpd-2.4.6-97.el7_9.x86_64.rpm                     | 1.2 MB   00:00     
+(3/6): httpd-tools-2.4.6-97.el7_9.x86_64.rpm               |  93 kB   00:00     
+(4/6): mailcap-2.1.41-2.el7.noarch.rpm                     |  31 kB   00:00     
+(5/6): apr-1.4.8-7.el7.x86_64.rpm                          | 104 kB   00:00     
+(6/6): redhat-logos-70.7.0-1.el7.noarch.rpm                |  13 MB   00:00     
+--------------------------------------------------------------------------------
+Total                                               37 MB/s |  15 MB  00:00     
+Retrieving key from file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+Importing GPG key 0xFD431D51:
+ Userid     : "Red Hat, Inc. (release key 2) <security@redhat.com>"
+ Fingerprint: 567e 347a d004 4ade 55ba 8a5f 199e 2f91 fd43 1d51
+ Package    : redhat-release-server-7.7-10.el7.x86_64 (@anaconda/7.7)
+ From       : /etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+Importing GPG key 0x2FA658E0:
+ Userid     : "Red Hat, Inc. (auxiliary key) <security@redhat.com>"
+ Fingerprint: 43a6 e49c 4a38 f4be 9abf 2a53 4568 9c88 2fa6 58e0
+ Package    : redhat-release-server-7.7-10.el7.x86_64 (@anaconda/7.7)
+ From       : /etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+Running transaction check
+Running transaction test
+Transaction test succeeded
+Running transaction
+  Installing : apr-1.4.8-7.el7.x86_64                                       1/6 
+  Installing : apr-util-1.5.2-6.el7.x86_64                                  2/6 
+  Installing : httpd-tools-2.4.6-97.el7_9.x86_64                            3/6 
+  Installing : redhat-logos-70.7.0-1.el7.noarch                             4/6 
+  Installing : mailcap-2.1.41-2.el7.noarch                                  5/6 
+  Installing : httpd-2.4.6-97.el7_9.x86_64                                  6/6 
+  Verifying  : httpd-tools-2.4.6-97.el7_9.x86_64                            1/6 
+  Verifying  : mailcap-2.1.41-2.el7.noarch                                  2/6 
+  Verifying  : apr-1.4.8-7.el7.x86_64                                       3/6 
+  Verifying  : apr-util-1.5.2-6.el7.x86_64                                  4/6 
+  Verifying  : httpd-2.4.6-97.el7_9.x86_64                                  5/6 
+  Verifying  : redhat-logos-70.7.0-1.el7.noarch                             6/6 
+
+Installed:
+  httpd.x86_64 0:2.4.6-97.el7_9                                                 
+
+Dependency Installed:
+  apr.x86_64 0:1.4.8-7.el7                  apr-util.x86_64 0:1.5.2-6.el7      
+  httpd-tools.x86_64 0:2.4.6-97.el7_9       mailcap.noarch 0:2.1.41-2.el7      
+  redhat-logos.noarch 0:70.7.0-1.el7       
+
+Complete!
+Loaded plugins: ovl, product-id, search-disabled-repos, subscription-manager
+This system is not receiving updates. You can use subscription-manager on the host to register and assign subscriptions.
+Cleaning repos: ubi-7 ubi-7-rhah ubi-7-server-devtools-rpms
+              : ubi-7-server-extras-rpms ubi-7-server-optional-rpms
+              : ubi-server-rhscl-7-rpms
+STEP 5: RUN sed -ri -e "/^Listen 80/c\Listen ${PORT}" /etc/httpd/conf/httpd.conf &&     chown -R apache:apache /etc/httpd/logs/ &&     chown -R apache:apache /run/httpd/
+STEP 6: USER apache
+STEP 7: Expose ${PORT}
+STEP 8: COPY ./src/ /var/www/html/
+STEP 9: CMD ["httpd", "-D", "FOREGROUND"]
+STEP 10: COMMIT do180/custom-apache
+Getting image source signatures
+Copying blob 5601485f0109 skipped: already exists
+Copying blob ac7577b8c383 skipped: already exists
+Copying blob e3f90dadd328 done
+Copying config 38f1e6deca done
+Writing manifest to image destination
+Storing signatures
+38f1e6deca9b606fe6aacfbbd79a39ba337f9e1a0cd8ae1ccd6dfd1b1fad3c80
+[student@workstation dockerfile-review]$ sudo podman ps
+CONTAINER ID  IMAGE  COMMAND  CREATED  STATUS  PORTS  NAMES
+[student@workstation dockerfile-review]$ sudo podman run -d --name dockerfile -p 20080:8080 do180/custom-apache
+7360fe23107dd3bb6dfa37abe3927d9128da3d66259c043536b7d312222e6f92
+[student@workstation dockerfile-review]$ sudo podman ps
+CONTAINER ID  IMAGE                                 COMMAND               CREATED        STATUS            PORTS                    NAMES
+7360fe23107d  localhost/do180/custom-apache:latest  httpd -D FOREGROU...  6 seconds ago  Up 6 seconds ago  0.0.0.0:20080->8080/tcp  dockerfile
+[student@workstation dockerfile-review]$ sudo podman ps -a
+CONTAINER ID  IMAGE                                 COMMAND               CREATED         STATUS             PORTS                    NAMES
+7360fe23107d  localhost/do180/custom-apache:latest  httpd -D FOREGROU...  16 seconds ago  Up 16 seconds ago  0.0.0.0:20080->8080/tcp  dockerfile
+[student@workstation dockerfile-review]$ curl 127.0.0.1:20080
+<html>
+ <header><title>DO180 Hello!</title></header>
+ <body>
+   Hello World! The dockerfile-review lab works!
+ </body>
+</html>
+[student@workstation dockerfile-review]$ 
